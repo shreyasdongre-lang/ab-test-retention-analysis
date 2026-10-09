@@ -71,11 +71,10 @@ and why statistical significance should be checked, not just the raw
 percentage difference.
 
 ## Files
-
-- `01_create_database_and_tables.sql` — database and table setup
-- `02_load_data.sql` — loads `data/cookie_cats.csv` into SQL Server
-- `03_analysis_queries.sql` — retention, engagement, significance testing, view, and stored procedure
-- `data/cookie_cats.csv` — source dataset
+   - `01_create_database_and_tables.sql` — database and table setup
+   - `02_load_data.sql` — loads `cookie_cats.csv` into SQL Server
+   - `03_analysis_queries.sql` — retention, engagement, significance testing (Day-1 and Day-7), view, and stored procedure
+   - `cookie_cats.csv` — source dataset
 
 ## Tools
 
