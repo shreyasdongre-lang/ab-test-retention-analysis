@@ -110,6 +110,39 @@ SELECT
 FROM expected;
 GO
 
+
+WITH observed AS (
+    SELECT
+        version,
+        SUM(CAST(retention_7 AS INT)) AS retained,
+        COUNT(*) - SUM(CAST(retention_7 AS INT)) AS not_retained,
+        COUNT(*) AS total
+    FROM dbo.game_events
+    GROUP BY version
+),
+totals AS (
+    SELECT
+        SUM(retained)     AS total_retained,
+        SUM(not_retained) AS total_not_retained,
+        SUM(total)        AS grand_total
+    FROM observed
+),
+expected AS (
+    SELECT
+        o.version,
+        o.retained, o.not_retained, o.total,
+        o.total * (t.total_retained     * 1.0 / t.grand_total) AS exp_retained,
+        o.total * (t.total_not_retained * 1.0 / t.grand_total) AS exp_not_retained
+    FROM observed o CROSS JOIN totals t
+)
+SELECT
+    SUM(
+        SQUARE(retained     - exp_retained)     / exp_retained +
+        SQUARE(not_retained - exp_not_retained) / exp_not_retained
+    ) AS chi_square_statistic_day7
+    -- df = 1; critical value 3.841 (p < 0.05), 6.635 (p < 0.01)
+FROM expected;
+GO
 -------------------------------------------------------------
 -- 6. Reusable view: retention scorecard by test group
 -------------------------------------------------------------
