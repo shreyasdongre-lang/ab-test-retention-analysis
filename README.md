@@ -44,8 +44,8 @@ distorting the results.
 
 - **Experimentation & A/B testing**: group balance checks, retention comparison
 between control and treatment, and a manually computed chi-square significance
-test in T-SQL (no built-in stats functions in SQL Server, so the contingency
-table and test statistic are built from first principles).
+test in T-SQL for both Day-1 and Day-7 retention (no built-in stats functions in
+SQL Server, so the contingency table and test statistic are built from first principles).
 - **Retention analysis**: Day-1 and Day-7 retention rates by test group.
 - **Engagement / feature impact**: distribution of game rounds played, "zero
 round" (activation failure) players, and engagement broken into buckets to see
@@ -54,13 +54,21 @@ how depth of play relates to 7-day retention.
 parameterized stored procedure (`usp_EngagementByBucket`) so the same analysis
 can be re-run without rewriting queries each time.
 
-## Key finding (from the underlying experiment)
+## Key finding
 
-Moving the gate from level 30 to level 40 slightly **decreased** Day-1 and Day-7
-retention rather than improving it — a counter-intuitive result that shows why
-shipping a feature change without an A/B test (and without checking statistical
-significance, not just the raw percentage difference) can lead to the wrong
-product decision.
+Moving the gate from level 30 to level 40 **decreased** retention rather than improving it.
+
+| Metric | gate_30 (control) | gate_40 (treatment) | Chi-square (df = 1) | Result |
+|---|---|---|---|---|
+| Players | 44,700 | 45,489 | | |
+| Day-1 retention | 44.82% | 44.23% | 3.18 | Not significant (below 3.841) |
+| Day-7 retention | 19.02% | 18.20% | 10.01 | Significant (above 6.635, p < 0.01) |
+
+The Day-1 dip could be due to chance, but the Day-7 drop is statistically
+significant. Moving the gate to level 40 hurts one-week retention, a
+counter-intuitive result that shows why a feature change should be tested,
+and why statistical significance should be checked, not just the raw
+percentage difference.
 
 ## Files
 
